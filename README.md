@@ -1,21 +1,64 @@
-# lupus-dice
+# Lupus-Chan 取扱説明書
 
-Docker Compose environment: Node.js 24 and Discord.js 14.
-Incoming guild messages and DMs are handled in src/message-handler.js.
-Only the exact text echo receives the reply echo. Bot/webhook messages are ignored.
+チャットにコマンドを送ると、ダイスを振れます。コマンドは**半角英数字**で入力してください。
 
-1. Set BOTTOKEN in .env.
-2. Start: docker compose up -d --build
-3. Logs: docker compose logs -f bot
+## ダイスを振る
 
-Stop: docker compose down
-After source changes: docker compose up -d --build
-Syntax check: docker compose run --rm --no-deps bot npm run check
+| 送信するコマンド | 動作 |
+|---|---|
+| `dd` | 100面ダイスを1個振る |
+| `1d100` | 100面ダイスを1個振る |
+| `2d6` | 6面ダイスを2個振る |
+| `3d10` | 10面ダイスを3個振る |
 
-.env is excluded from Git and Docker images.
-Dependencies are locked in package-lock.json and installed with npm ci.
-No inbound ports are required.
-Enable Message Content Intent under Bot > Privileged Gateway Intents in the Discord Developer Portal.
-The bot needs View Channel, Send Messages, and Read Message History permissions in the target channels.
-Triggers/replies can be edited in the replies Map in src/message-handler.js.
-Matching is case-sensitive and includes whitespace.
+基本の書き方は **`個数d面数`** です。複数個振った場合は、それぞれの出目と合計が表示されます。
+
+## 目標値を指定する
+
+ダイスの後ろに、半角スペースを空けて目標値を入力します。
+
+```text
+1d100 50
+```
+
+出目の合計が目標値以下なら「成功」、超えると「失敗」です。`1d100`の判定では、出目に応じてクリティカルやファンブルも表示されます。
+
+結果の表示は次の意味です。
+
+| 表示 | 意味 |
+|---|---|
+| `MidCalcu` | 各ダイスの出目 |
+| `Rolled` | 合計値と目標値 |
+| `Result` | 成功・失敗などの判定 |
+
+## チャンネルごとにダイスをON／OFFにする
+
+切り替えたいチャンネルで送信します。
+
+```text
+!woof
+```
+
+| Botの返信 | 切り替え後の状態 |
+|---|---|
+| `DICEROLL: OFF` | このチャンネルではダイスに反応しません |
+| `DICEROLL: ON` | このチャンネルでダイスを使えます |
+
+送るたびにON／OFFが切り替わります。**他のチャンネルには影響しません。** OFF中でも`!woof`でONに戻せます。
+
+## 動作を確認する
+
+```text
+echo
+```
+
+Botが`echo`と返信します。ダイスがOFFのチャンネルでも利用できます。
+
+## 入力時の注意
+
+- ダイスの個数は **1～1,000個**、面数は **1～10,000面**です。
+- `2d6`のように、個数と面数の間にスペースを入れず、小文字の`d`を使ってください。
+- `!woof`と`echo`は、その文字列だけで送信してください。前後に空白や別の文章があると反応しません。
+- BotやWebhookからの投稿には反応しません。
+
+反応しない場合は、入力内容とチャンネルのダイス設定を確認してください。`echo`にも反応しない場合は、Botの稼働状態やチャンネル権限を管理者に確認してください。
