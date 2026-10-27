@@ -69,7 +69,7 @@ async function diceRoll(message, reply) {
 
   const comment = match[4] ?? "";
 
-  if (!Number.isSafeInteger(count) || !Number.isSafeInteger(diceFace) || !Number.isSafeInteger(checkingNumber) || count < 1 || count > 1000 || diceFace < 1 || diceFace > 10000) {
+  if (!Number.isSafeInteger(count) || !Number.isSafeInteger(diceFace) || !Number.isSafeInteger(checkingNumber) || count < 1 || count > 10000000 || diceFace < 1 || diceFace > 10000000) {
     await message.reply("ダイスの指定が無効です。");
     return;
   }
